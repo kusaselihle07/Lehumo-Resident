@@ -272,20 +272,47 @@
 
 </div>
 
-<button class="download-btn" onclick="downloadPoster()">⬇️ Download Poster</button>
+<button class="download-btn" id="dlBtn" onclick="downloadPoster()">Download Poster</button>
 
 <p style="font-size: 11px; color: rgba(255,255,255,0.35); font-family: Barlow, sans-serif; letter-spacing: 1px; margin-top: 4px;">coded by Kusaselihle ❤️</p>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <script>
   function downloadPoster() {
-    const btn = document.querySelector('.download-btn');
-    btn.style.display = 'none';
-    html2canvas(document.querySelector('.poster'), { scale: 2, useCORS: true, allowTaint: true }).then(canvas => {
-      const link = document.createElement('a');
-      link.download = 'Lehumo_Residence_Poster.png';
-      link.href = canvas.toDataURL('image/png');
-      link.click();
-      btn.style.display = 'flex';
+    const btn = document.getElementById('dlBtn');
+    btn.textContent = 'Saving photo...';
+    btn.disabled = true;
+    btn.style.opacity = '0.7';
+
+    const poster = document.querySelector('.poster');
+
+    html2canvas(poster, {
+      scale: 3,
+      useCORS: true,
+      allowTaint: true,
+      backgroundColor: null,
+      logging: false
+    }).then(function(canvas) {
+      // Convert to image blob and force download
+      canvas.toBlob(function(blob) {
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'Lehumo_Residence_Poster.png';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+
+        btn.textContent = 'Download Poster';
+        btn.disabled = false;
+        btn.style.opacity = '1';
+      }, 'image/png');
+    }).catch(function(err) {
+      console.error(err);
+      btn.textContent = 'Download Poster';
+      btn.disabled = false;
+      btn.style.opacity = '1';
+      alert('Download failed. Please try again.');
     });
   }
 </script>
